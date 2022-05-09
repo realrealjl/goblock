@@ -17,6 +17,7 @@ type Block struct {
 	PrevBlockHash []byte
 	Hash []byte
 	Data []byte
+	Nonce int
 }
 
 // NewBlock 用于生成新块，参数需要Data与PrevBlockHash
@@ -27,9 +28,14 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 		PrevBlockHash: prevBlockHash,
 		Hash: []byte{},
 		Data: []byte(data),
+		Nonce: 0,
 	}
+	pow := NewProofOfWork(block)
+	nonce, hash := pow.Run()
 
-	block.SetHash()
+	block.Hash = hash[:]
+	block.Nonce = nonce
+
 	return block
 }
 
