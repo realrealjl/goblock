@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"crypto/sha256"
+	"encoding/gob"
+	"log"
 	"strconv"
 	"time"
 )
@@ -18,6 +20,31 @@ type Block struct {
 	Hash []byte
 	Data []byte
 	Nonce int
+}
+
+// Serialize 将Block序列化为一个字节数组
+func (b *Block) Serialize() []byte{
+	var result bytes.Buffer
+	encoder := gob.NewEncoder(&result)
+
+	err := encoder.Encode(b)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return result.Bytes()
+}
+
+// DeserializeBlock 将字节数组反序列为一个Block
+func DeserializeBlock(d []byte) *Block {
+	var block Block
+
+	decoder := gob.NewDecoder(bytes.NewReader(d))
+	err := decoder.Decode(&block)
+	if err != nil {
+		log.Panic(err)
+	}
+	return &block
 }
 
 // NewBlock 用于生成新块，参数需要Data与PrevBlockHash
